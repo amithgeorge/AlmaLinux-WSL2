@@ -1,0 +1,66 @@
+#!/usr/bin/env bash
+
+set -euxo pipefail
+
+scriptdir="$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+distdir="${scriptdir}/dist"
+workdir="${scriptdir}/workdir"
+outdir="${workdir}/out"
+rootfsdir="${workdir}/rootfs"
+mkdir -p "${workdir}"
+
+# Download Alma cloud init image
+image="AlmaLinux-8-GenericCloud-latest.x86_64.qcow2"
+url="https://repo.almalinux.org/almalinux/8/cloud/x86_64/images/${image}"
+image_path="${workdir}/${image}"
+
+if [ -f "${image_path}" ]; then
+	echo "Alma cloud-init image exists in workdir. Skipping download."
+else
+	echo "Downloading ${url}"
+	curl --silent --output "${image_path}" "${url}"
+fi
+
+# Download WSLDL
+url="https://github.com/yuk7/wsldl/releases/latest/download/wsldl.exe"
+wsldl_path="${workdir}/Alma-8.exe"
+
+if [ -f "${wsldl_path}" ]; then
+	echo "WSLDL exists in workdir. Skipping download."
+else
+	echo "Downloading ${url}"
+	curl --silent --location --output "${wsldl_path}" "${url}"
+fi
+
+# Extract rootfs from image
+sudo rm -rf "${rootfsdir}"
+sudo mkdir -p "${rootfsdir}"
+echo "Extracting rootfs"
+# Unmount and remount the image
+sudo guestunmount --quiet --no-retry "${rootfsdir}" || true
+sudo guestmount --add "${image_path}" --inspector --ro "${rootfsdir}"
+
+# Archive the rootfs
+echo "Compressing rootfs"
+rootfs_tar="${workdir}/install.tar.gz" 
+sudo tar -zcpf ${rootfs_tar} -C "${rootfsdir}" .
+sudo chown "$(id -un)" "${rootfs_tar}" 
+
+# Unmount the image
+sudo guestunmount "${rootfsdir}"
+
+# Create the download bundle
+echo "Creating the download bundle"
+rm -rf "${outdir}"
+mkdir -p "${outdir}"
+mv "${rootfs_tar}" "${wsldl_path}" "${outdir}"
+
+dist_file="${distdir}/Alma-8.zip"
+rm -rf "${distdir}"
+mkdir -p  "${distdir}"
+
+# quirk with zip where in -j doesn't always exclude absolute paths 
+pushd "${outdir}"
+zip "${dist_file}" ./*
+popd
+
