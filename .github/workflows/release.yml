@@ -1,15 +1,28 @@
-name: Manually triggered release
-on: workflow_dispatch
+name: Release on tag push
+on:
+  push:
+    tags:
+      - "rel-**"
 
 jobs:
-  build:
+  release:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
+
       - run: sudo apt-get update -y && sudo apt-get install -y libguestfs-tools
+
       - name: Build the archive
         run: ./build
-      - uses: actions/upload-artifact@v2
+
+      - name: Store the release notes
+        run: |
+          git tag -l --format='%(contents)' $GITHUB_REF_NAME > "/tmp/release-notes-${GITHUB_REF_NAME}"
+          [ -s "/tmp/release-notes-${GITHUB_REF_NAME}" ]
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
         with:
-          name: Alma-8.zip
-          path: ./dist/Alma-8.zip
+          files: ./dist/Alma-8.zip
+          body_path: "/tmp/release-notes-${{ github.ref_name }}"
+          tag: "${{ github.ref_name }}"
