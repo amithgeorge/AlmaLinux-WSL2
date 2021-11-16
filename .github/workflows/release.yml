@@ -25,4 +25,3 @@ jobs:
         with:
           files: ./dist/Alma-8.zip
           body_path: "/tmp/release-notes-${{ github.ref_name }}"
-          tag: "${{ github.ref_name }}"
