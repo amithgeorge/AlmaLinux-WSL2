@@ -5,6 +5,7 @@ set -euxo pipefail
 scriptdir="$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 distdir="${scriptdir}/dist"
 workdir="${scriptdir}/workdir"
+iconsdir="${workdir}/icons"
 outdir="${workdir}/out"
 rootfsdir="${workdir}/rootfs"
 mkdir -p "${workdir}"
@@ -22,14 +23,18 @@ else
 fi
 
 # Download WSLDL
-url="https://github.com/yuk7/wsldl/releases/latest/download/wsldl.exe"
+url="https://github.com/yuk7/wsldl/releases/latest/download/icons.zip"
 wsldl_path="${workdir}/Alma-8.exe"
 
 if [ -f "${wsldl_path}" ]; then
 	echo "WSLDL exists in workdir. Skipping download."
 else
 	echo "Downloading ${url}"
-	curl --silent --location --output "${wsldl_path}" "${url}"
+	rm -rf "${iconsdir}"
+	mkdir -p "${iconsdir}"
+	curl --silent --location --output "${iconsdir}/icons.zip" "${url}"
+	unzip -d "${iconsdir}" "${iconsdir}/icons.zip"
+	mv "${iconsdir}/Alma.exe" "${wsldl_path}"
 fi
 
 # Extract rootfs from image
