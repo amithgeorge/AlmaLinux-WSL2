@@ -1,15 +1,23 @@
-name: Debugging something
-on: workflow_dispatch
+name: Debug workflow issues
+on:
+  # trigger manually
+  workflow_dispatch:
+  # trigger on pushing a tag named dummy
+  push:
+    tags:
+      - "dummy*"
 
 jobs:
   build:
     runs-on: ubuntu-20.04
     steps:
-      - name: Store the release notes
+      - uses: actions/checkout@v2
+      - name: Fetch annotated tag message
+        run: |
+          # checkout@v2 doesn't fetch annotated tag's message
+          # Issue: https://github.com/actions/checkout/issues/290
+          # Workaround found here: https://github.com/ericcornelissen/git-tag-annotation-action#known-issues
+          git fetch --tags --force
+      - name: Do your debugging here
         run: |
           set -x
-          MY_TAG=rel-8.4-20210727
-          MY_FILE="/tmp/release-notes-${MY_TAG}"
-          git tag -l --format='%(contents)' $MY_TAG > 
-          cat $MY_FILE
-          [ -s "$MY_FILE" ]
