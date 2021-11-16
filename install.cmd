@@ -4,6 +4,7 @@ set InstanceName=Alma-8
 
 echo Installing %InstanceName%
 "%InstanceName%.exe" install || EXIT /b 1
+"%InstanceName%.exe" config --default-term wt
 "%InstanceName%.exe" run cat /etc/almalinux-release
 
 echo.
@@ -14,7 +15,7 @@ echo Creating user %USERNAME%
 echo.
 echo.
 echo Upgrading installed software
-"%InstanceName%.exe" run yum update --quiet --assumeyes
+"%InstanceName%.exe" run yum upgrade --quiet --assumeyes
 
 echo.
 echo.
@@ -36,8 +37,4 @@ echo.
 echo Restarting %InstanceName% for changes to take effect
 wsl --terminate %InstanceName%
 
-echo.
-echo.
-echo Checking default user for %InstanceName% (whoami)
-"%InstanceName%.exe" run whoami
-
+echo "All done."
