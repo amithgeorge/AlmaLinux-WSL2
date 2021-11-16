@@ -1,0 +1,15 @@
+name: Debugging something
+on: workflow_dispatch
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Store the release notes
+        run: |
+          set -x
+          MY_TAG=rel-8.4-20210727
+          MY_FILE="/tmp/release-notes-${MY_TAG}"
+          git tag -l --format='%(contents)' $MY_TAG > 
+          cat $MY_FILE
+          [ -s "$MY_FILE" ]
