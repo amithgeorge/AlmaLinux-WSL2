@@ -17,7 +17,7 @@ The exe (`Alma.exe`) is provided by [wsldl](https://github.com/yuk7/wsldl). Plea
 
 A few quality of life changes maybe made by the user
 
-1. Create a new user account inside Alma and use that as the default. Execute these from a `powershell` shell, inside the host Windows OS. Ensure the present working directory is the installation directory selected in "Installtion Step 2".
+1. Create a new user account inside Alma and use that as the default. Execute these from a `powershell` shell, inside the host Windows OS. Ensure the present working directory is the installation directory selected in "Installation Step 2".
 
 ```shell
 .\Alma-8.exe run adduser -G wheel "%USERNAME%"
