@@ -6,7 +6,7 @@ The `build` script is used to create a WSL2 compatible RootFS from the QCOW2 clo
 
 ## Installation
 
-1. Download the latest release. (Not yet published. Need to figure out how to release).
+1. Download the zip from the [latest release](https://github.com/amithgeorge/AlmaLinux-WSL2/releases/latest).
 2. Extract the zip to the installation folder. Eg `C:\WSL2 Distros\Alma-8`
 3. Execute the file `Alma-8.exe`. This will install and register Alma with WSL2.
 4. Execute the file again to enter the distribution. The default user will be `root`.
